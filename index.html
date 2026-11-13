@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jogo da Memória - Povo Krenak</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐢</text></svg>">
+</head>
+<body>
+  <div class="bg-pattern-overlay"></div>
+
+  <!-- Notification Toast for Matches -->
+  <div id="match-toast" class="match-toast" role="alert" aria-live="assertive">
+    <div id="toast-content">🎉 PAR ENCONTRADO!</div>
+  </div>
+
+  <div class="app-container">
+    <!-- Top Header Bar -->
+    <header class="header-bar">
+      <div class="brand-section">
+        <span class="brand-badge">Povo Krenak</span>
+        <h1 class="game-title">Jogo da Memória</h1>
+        <span class="subtitle-badge">Krenak ⇄ Português</span>
+      </div>
+
+      <nav class="header-controls">
+        <button id="btn-rules" class="btn-icon-label" title="Ver regras do jogo">
+          <span>📖</span> <span>Como Jogar</span>
+        </button>
+        <button id="btn-dict" class="btn-icon-label" title="Vocabulário e palavras Krenak">
+          <span>📚</span> <span>Palavras Krenak</span>
+        </button>
+        <button id="btn-restart" class="btn-icon-label" title="Reiniciar jogo">
+          <span>🔄</span> <span>Novo Jogo</span>
+        </button>
+        <button id="btn-audio" class="btn-icon-label active" title="Ativar/Desativar efeitos sonoros">
+          <span class="icon">🔊</span> <span>Som</span>
+        </button>
+        <button id="btn-fullscreen" class="btn-icon-label" title="Modo Tela Cheia (Totem / Kiosk)">
+          <span>⛶</span> <span>Tela Cheia</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Turn Banner & Dynamic Scoreboard -->
+    <section class="turn-banner" id="turn-banner">
+      <div class="active-turn-indicator">
+        <div id="active-player-avatar" class="player-avatar-badge">🌿</div>
+        <div class="active-turn-text">
+          <h3>Vez de: <span id="active-player-name">Jogador 1</span></h3>
+          <p id="active-turn-message">Vire 2 cartas para encontrar o par correspondente!</p>
+        </div>
+      </div>
+
+      <div class="players-scoreboard" id="players-scoreboard">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Game Board -->
+    <main class="game-board-container">
+      <div id="cards-grid" class="cards-grid">
+        <!-- Memory cards injected by JavaScript -->
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================================
+       MODAL: CONFIGURAÇÃO / NOVO JOGO
+       ============================================================ -->
+  <div id="setup-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Jogo da Memória Krenak</h2>
+        <p>Aprenda a língua viva do povo Krenak combinando cada palavra com seu significado em português!</p>
+      </div>
+
+      <!-- Player Count Option -->
+      <div class="setup-group">
+        <label>👥 Quem vai jogar?</label>
+        <div class="pill-grid">
+          <button type="button" class="setup-pill player-count-pill" data-players="1">
+            <span class="pill-title">1 Jogador</span>
+            <span class="pill-sub">Modo Solo</span>
+          </button>
+          <button type="button" class="setup-pill player-count-pill selected" data-players="2">
+            <span class="pill-title">2 Jogadores</span>
+            <span class="pill-sub">Duelo Clássico</span>
+          </button>
+          <button type="button" class="setup-pill player-count-pill" data-players="3">
+            <span class="pill-title">3 Jogadores</span>
+            <span class="pill-sub">Em Grupo</span>
+          </button>
+          <button type="button" class="setup-pill player-count-pill" data-players="4">
+            <span class="pill-title">4 Jogadores</span>
+            <span class="pill-sub">Roda Cultural</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Player Names -->
+      <div class="setup-group">
+        <label>✏️ Nomes dos Participantes</label>
+        <div class="players-inputs-container">
+          <div class="player-input-box" id="player-1-input-box">
+            <span>🌿</span>
+            <input type="text" id="player-1-name" value="Jogador 1" maxlength="15" placeholder="Nome do Jogador 1">
+          </div>
+          <div class="player-input-box" id="player-2-input-box">
+            <span>🐆</span>
+            <input type="text" id="player-2-name" value="Jogador 2" maxlength="15" placeholder="Nome do Jogador 2">
+          </div>
+          <div class="player-input-box" id="player-3-input-box" style="display:none;">
+            <span>🦅</span>
+            <input type="text" id="player-3-name" value="Jogador 3" maxlength="15" placeholder="Nome do Jogador 3">
+          </div>
+          <div class="player-input-box" id="player-4-input-box" style="display:none;">
+            <span>☀️</span>
+            <input type="text" id="player-4-name" value="Jogador 4" maxlength="15" placeholder="Nome do Jogador 4">
+          </div>
+        </div>
+      </div>
+
+      <!-- Difficulty / Number of Pairs -->
+      <div class="setup-group">
+        <label>🎴 Quantidade de Cartas</label>
+        <div class="pill-grid">
+          <button type="button" class="setup-pill difficulty-pill" data-pairs="8">
+            <span class="pill-title">8 Pares</span>
+            <span class="pill-sub">16 cartas (Rápido - 1 Verso)</span>
+          </button>
+          <button type="button" class="setup-pill difficulty-pill" data-pairs="16">
+            <span class="pill-title">16 Pares</span>
+            <span class="pill-sub">32 cartas (Médio - 2 Versos)</span>
+          </button>
+          <button type="button" class="setup-pill difficulty-pill" data-pairs="24">
+            <span class="pill-title">24 Pares</span>
+            <span class="pill-sub">48 cartas (Desafio - 3 Versos)</span>
+          </button>
+          <button type="button" class="setup-pill difficulty-pill selected" data-pairs="31">
+            <span class="pill-title">31 Pares</span>
+            <span class="pill-sub">62 cartas (Todas - 4 Versos)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Visual Preview of the 4 Pre-defined Card Backs -->
+      <div class="setup-group">
+        <label>🎨 4 Versos Culturais Integrados no Jogo</label>
+        <p style="font-size:0.86rem; color:#d0d0d0; margin-bottom: 8px;">
+          Cada grupo de cartas possui seu próprio verso preservado na mesa:
+        </p>
+        <div class="card-backs-grid">
+          <div class="back-card-preview">
+            <img src="assets/backs/back_1_geometric.png" alt="Verso Geométrico">
+            <span class="back-label">1º Grupo (8 pares)<br>Geométrico</span>
+          </div>
+          <div class="back-card-preview">
+            <img src="assets/backs/back_2_indigenous_art.png" alt="Guerreira e Onça">
+            <span class="back-label">2º Grupo (8 pares)<br>Guerreira & Onça</span>
+          </div>
+          <div class="back-card-preview">
+            <img src="assets/backs/back_3_colorful_painting.png" alt="Pintura Rio Watu">
+            <span class="back-label">3º Grupo (8 pares)<br>Rio Watu</span>
+          </div>
+          <div class="back-card-preview">
+            <img src="assets/backs/back_4_ailton_krenak.png" alt="Ailton Krenak">
+            <span class="back-label">4º Grupo (7 pares)<br>Ailton Krenak</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" id="btn-start-game" class="btn-primary-action">
+        <span>🎮</span> <span>EMBARALHAR E JOGAR!</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: COMO JOGAR
+       ============================================================ -->
+  <div id="rules-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="close-rules-btn" class="modal-close-btn" title="Fechar">&times;</button>
+        <h2>Como Jogar</h2>
+        <p>Regras oficiais do Jogo da Memória Krenak</p>
+      </div>
+
+      <div class="rules-list">
+        <div class="rule-step">
+          <div class="rule-num">1</div>
+          <div class="rule-text">
+            <strong>Embaralhe todas as cartas:</strong><br>
+            Todas as cartas são distribuídas viradas para baixo sobre o tabuleiro digital. Cada grupo de cartas possui seu verso tradicional pré-definido!
+          </div>
+        </div>
+
+        <div class="rule-step">
+          <div class="rule-num">2</div>
+          <div class="rule-text">
+            <strong>Defina a ordem dos jogadores:</strong><br>
+            O jogo indica no topo da tela de quem é a vez de jogar.
+          </div>
+        </div>
+
+        <div class="rule-step">
+          <div class="rule-num">3</div>
+          <div class="rule-text">
+            <strong>Vire 2 cartas por vez:</strong><br>
+            Cada par é composto por <strong>1 carta em KRENAK</strong> e <strong>1 carta em PORTUGUÊS</strong> correspondente.<br>
+            <em>Exemplo: GUT (Krenak) ⇄ TARTARUGA (Português)</em>
+          </div>
+        </div>
+
+        <div class="rule-step">
+          <div class="rule-num">✅</div>
+          <div class="rule-text">
+            <strong>Se as cartas forem um par correspondente:</strong><br>
+            O jogador ganha 1 ponto, fica com o par e <strong>joga novamente!</strong>
+          </div>
+        </div>
+
+        <div class="rule-step">
+          <div class="rule-num">⏭</div>
+          <div class="rule-text">
+            <strong>Se errar:</strong><br>
+            As cartas voltam a ficar viradas para baixo e a vez passa para o próximo jogador.
+          </div>
+        </div>
+
+        <div class="rule-step">
+          <div class="rule-num">🏆</div>
+          <div class="rule-text">
+            <strong>Fim de jogo:</strong><br>
+            Quando todos os pares forem encontrados, o jogador com mais combinações vence!
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-primary-action" onclick="document.getElementById('rules-modal').classList.add('hidden')">
+        Entendido! Vamos Jogar!
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: DICIONÁRIO E VOCABULÁRIO KRENAK
+       ============================================================ -->
+  <div id="dictionary-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="close-dict-btn" class="modal-close-btn" title="Fechar">&times;</button>
+        <h2>Vocabulário Krenak</h2>
+        <p>Conheça as 31 palavras e seus versos correspondentes!</p>
+      </div>
+
+      <div id="dictionary-grid" class="dictionary-grid">
+        <!-- Injected by JavaScript -->
+      </div>
+
+      <button type="button" class="btn-primary-action" onclick="document.getElementById('dictionary-modal').classList.add('hidden')">
+        Voltar ao Tabuleiro
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: VITÓRIA & FIM DE JOGO
+       ============================================================ -->
+  <div id="victory-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align: center;">
+      <div class="modal-header">
+        <h2 id="victory-title">🎉 PARABÉNS!</h2>
+        <p id="victory-message">Todos os pares foram encontrados!</p>
+      </div>
+
+      <div id="victory-podium" class="victory-podium">
+        <!-- Injected by JavaScript -->
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button type="button" id="btn-play-again" class="btn-primary-action">
+          <span>🔄</span> <span>Jogar Novamente</span>
+        </button>
+        <button type="button" id="btn-new-settings" class="btn-primary-action" style="background: linear-gradient(135deg, #2a9d8f, #264653);">
+          <span>⚙️</span> <span>Mudar Jogadores / Cartas</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: KIOSK INATIVIDADE
+       ============================================================ -->
+  <div id="idle-modal" class="modal-overlay hidden">
+    <div class="modal-content idle-modal" style="max-width: 480px;">
+      <h2>Olá! Ainda está jogando?</h2>
+      <p>Em breve o jogo será reiniciado para o próximo visitante.</p>
+      <div id="idle-countdown" class="idle-countdown">20</div>
+      <button type="button" id="idle-stay-btn" class="btn-primary-action">
+        Sim, continuar jogando!
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="cards_database.js"></script>
+  <script src="audio.js"></script>
+  <script src="confetti.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

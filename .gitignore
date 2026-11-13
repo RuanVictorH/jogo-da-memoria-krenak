@@ -1,0 +1,7 @@
+# Páginas intermediárias de extração de PDF (não necessárias em produção)
+extracted_pages/
+
+# Arquivos de sistema e temporários
+.DS_Store
+Thumbs.db
+*.tmp
