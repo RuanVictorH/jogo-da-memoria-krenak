@@ -282,6 +282,7 @@ class MemoryGame {
           <span class="lang-tag ${card.lang === 'krenak' ? 'lang-krenak' : 'lang-pt'}">
             ${card.lang === 'krenak' ? 'Krenak' : 'Português'}
           </span>
+          <div class="match-check-badge" title="Par Descoberto!">✓</div>
           <img src="${card.img}" alt="${card.word}" loading="lazy">
         </div>
       `;

@@ -358,32 +358,49 @@ body {
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
 }
 
+/* Cartas de pares descobertos: mantidas viradas para cima, 100% legíveis com sinal de check permanente */
 .memory-card.matched {
-  transform: rotateY(180deg) scale(0.96);
+  transform: rotateY(180deg) !important;
   cursor: default;
-  opacity: 0.92;
-  box-shadow: 0 0 16px var(--match-color, #ffd166);
-  border: 3px solid var(--match-color, #ffd166);
+  opacity: 1 !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3), 0 0 16px var(--match-color, #2a9d8f) !important;
 }
 
-.memory-card.matched::after {
-  content: '✓';
+.memory-card.matched:hover {
+  transform: rotateY(180deg) !important;
+}
+
+.memory-card.matched .card-front {
+  border: 3.5px solid var(--match-color, #2a9d8f) !important;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Sinal de Check (✓) visível e destacado na frente da carta */
+.match-check-badge {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: var(--match-color, #2a9d8f);
-  color: white;
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
+  background: var(--match-color, #2a9d8f);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 0.95rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  z-index: 5;
-  transform: rotateY(180deg);
+  font-size: 1.1rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.memory-card.matched .match-check-badge {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Card Faces */
